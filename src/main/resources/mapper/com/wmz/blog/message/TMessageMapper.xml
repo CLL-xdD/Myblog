@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wmz.blog.message.mapper.TMessageMapper">
+
+    <resultMap id="all" type="com.wmz.blog.message.model.TMessage">
+        <id column="id" property="id"/>
+        <result property="avatar" column="avatar"/>
+        <result property="content" column="content"/>
+        <result property="nickname" column="nickname"/>
+        <result property="createTime" column="create_time"/>
+        <result property="pid" column="pid"/>
+        <result property="createUser" column="create_user"/>
+        <result property="status" column="status"/>
+        <collection property="replyMessages" column="id" ofType="com.wmz.blog.message.model.TMessage" select="com.wmz.blog.message.mapper.TMessageMapper.selectSon"/>
+    </resultMap>
+
+    <select id="selectAll" resultType="com.wmz.blog.message.model.TMessage">
+        select
+          tm.id,
+          su.avatar,
+          tm.content,
+          su.nickname,
+          tm.create_time,
+          tm.create_user,
+          tm.pid,
+          tm.status,
+          su.identity
+        from
+          t_message tm left join sys_user su on tm.create_user = su.id
+        where
+         tm.status = '1' and su.status = '1'
+         <if test="type!=null and type!=''">
+             and tm.type = #{type}
+         </if>
+         <if test="blogId!=null and blogId!=''">
+             and tm.blog_id = #{blogId}
+         </if>
+         order by tm.create_time desc
+    </select>
+
+    <select id="selectSon" resultType="com.wmz.blog.message.model.TMessage" parameterType="string">
+        select
+          *
+        from
+          t_message
+        where
+        pid = #{pid} and status = '1'
+    </select>
+</mapper>

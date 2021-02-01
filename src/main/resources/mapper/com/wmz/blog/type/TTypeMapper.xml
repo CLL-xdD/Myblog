@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wmz.blog.type.mapper.TTypeMapper">
+    <select id="selectTypes" resultType="com.wmz.blog.type.model.TType">
+        select
+          tt.id,
+          tt.name,
+          tt.create_user as createUser,
+          tt.create_time as createTime,
+          (select count(*) from t_blogs t where t.published = '1' and t.status = '1' and t.type_id = tt.id) as blogs
+        from
+          t_type tt
+        where
+          tt.status = '1' order by tt.create_time desc
+    </select>
+</mapper>
